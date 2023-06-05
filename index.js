@@ -2,7 +2,9 @@
 const express = require("express");
 const cors = require("cors");
 
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
+const { userController } = require("./src/controllers/user");
+const { itemsController } = require("./src/controllers/item");
 
 // configure the app to use bodyParser()
 
@@ -29,89 +31,24 @@ const port = 3333;
 
 const app = express();
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 app.use(bodyParser.json());
 
 app.listen(port, () => {
   console.log("Server running on port: ", port);
 });
 
-/* CORS */
-/* const options = {
-    origin: "mascara do ip da empresa"
-} */
-
-//app.use(cors()); Libera todos os CORS
-app.use(cors({
-  origin: "172.17.1.161" 
-}));
-
+app.use(
+  cors({
+    origin: ["172.17.1.161", "http://localhost:5173"],
+  })
+);
 
 /* MODEL - TABELAS  */
 
-const todoList = [
-  {
-    id: 1,
-    titulo: "",
-    descricao: "",
-    dataFinal: "",
-    dataCriacao: "",
-    autor: "",
-    status: "",
-  },
-];
-const user = [
-  {
-    id: "",
-    name: "",
-    pass: "",
-  },
-];
-
-/* END POONTS */
-
-app.get("/", function (req, res) {
-  let response = "Hello World! :)Leozinho";
-  res.send({ response });
-});
-
-/* READ ENDPOINT */
-
-app.get("/todoList", function (req, res) {
-  res.send({ todoList });
-});
-
-
-/* POST ENDPOINT */
-app.post("/add", (req, res) => {
-  const { body } = req
-  todoList.push(body)
-
-  res.status(201).json({result:"success"})
-})
-
-
-/* UPDATE ENDPOINT */
-app.put("/edit/:id", (req, res) => {
-  const { id } = req.params
-  const { body } = req
-
-  todoList[id] = body
-
-  res.status(201).json({result:"success"})
-})
-
-
-/* DELETE ENDPOINT */
-app.delete("/delete/:id", (req, res) => {
-  const { id } = req.params
-
-  todoList.splice(id, 1)
-  console.log("id deletado: ",id)
-
-  res.status(201).json({result:"success"})
-})
-
-
+app.use("/user", userController);
+app.use("/items", itemsController);
